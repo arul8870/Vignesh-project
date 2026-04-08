@@ -19,7 +19,7 @@ import {
   Close,
   AccountCircle,
   Logout,
-  Sparkles,
+  Star,
 } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
@@ -129,7 +129,7 @@ const MobileSidebar = ({ isOpen, onClose }) => {
               boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
             }}
           >
-            <Sparkles sx={{ color: "white", fontSize: "1.5rem" }} />
+            <Star sx={{ color: "white", fontSize: "1.5rem" }} />
           </Box>
           <Typography 
             variant="h6" 
