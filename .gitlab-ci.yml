@@ -40,12 +40,12 @@ update-manifest:
     - ar-1
   image: docker:git
   # variables:
-  # https://gitlab.arffy.com/janakiraman_arffy/report_frontend.git
-  # PRJ_URL: https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.arffy.com/janakiraman_arffy/$CI_PROJECT_NAME.git
-  # PRJ_URL: https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.arffy.com/$CI_PROJECT_PATH.git
+  # https://gitlab.Hicas.com/janakiraman_Hicas/report_frontend.git
+  # PRJ_URL: https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.Hicas.com/janakiraman_Hicas/$CI_PROJECT_NAME.git
+  # PRJ_URL: https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.Hicas.com/$CI_PROJECT_PATH.git
 
   before_script:
-    - export PRJ_URL="https://oauth2:${PRJ_PAT}@${ARFFY_GITLAB_HOME}/${CI_PROJECT_PATH}.git"
+    - export PRJ_URL="https://oauth2:${PRJ_PAT}@${Hicas_GITLAB_HOME}/${CI_PROJECT_PATH}.git"
     - export K8S_MANIFEST_FULL_PATH=$CI_PROJECT_DIR/$K8S_MANIFEST_PATH
     - export IMAGE_TAG=$(echo "$CI_COMMIT_SHORT_SHA" | tr '[:upper:]' '[:lower:]')
     - export REGISTRY_IMAGE_PATH=$(echo "${REGISTRY_IMAGES_ROOT}/${CI_PROJECT_NAME}" | tr '[:upper:]' '[:lower:]')
@@ -160,7 +160,7 @@ flip-first-deploy:
   image: alpine:latest
   # <<: *curl-install
   before_script:
-    - export GITLAB_PRJ_VAR_SET_URL=https://${ARFFY_GITLAB_HOME}/api/v4/projects/$CI_PROJECT_ID/variables/FIRST_TIME_DEPLOY
+    - export GITLAB_PRJ_VAR_SET_URL=https://${Hicas_GITLAB_HOME}/api/v4/projects/$CI_PROJECT_ID/variables/FIRST_TIME_DEPLOY
     - apk add --no-cache curl # Required for curl to work
   script:
     - |

@@ -11,12 +11,12 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - bpreact.arffy.com
-      secretName: arffy-tls
+        - bpreact.Hicas.com
+      secretName: Hicas-tls
   # Define shared paths block once
   rules:
     - &frontendRules
-      host: bpreact.arffy.com
+      host: bpreact.Hicas.com
       http:
         paths:
           - path: /

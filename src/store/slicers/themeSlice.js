@@ -20,26 +20,51 @@ const themeColors = {
       hover: "rgba(16, 185, 129, 0.08)",
     },
   },
+  light: {
+    background: {
+      default: "#f5f5f5",
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#1a1a1a",
+      secondary: "#6b7280",
+    },
+    divider: "rgba(0, 0, 0, 0.08)",
+    header: "#ffffff",
+    sidebar: {
+      background: "#ffffff",
+      activeItem: "rgba(16, 185, 129, 0.1)",
+      text: "#1a1a1a",
+      hover: "rgba(16, 185, 129, 0.05)",
+    },
+  },
 };
 
-const getThemeColors = () => ({
-  primary: {
-    main: "#10b981",
-    light: "#34d399",
-    dark: "#059669",
-  },
-  ...themeColors.dark,
-});
+const getThemeColors = (darkMode) => {
+  const mode = darkMode ? "dark" : "light";
+  return {
+    primary: {
+      main: "#10b981",
+      light: "#34d399",
+      dark: "#059669",
+    },
+    ...themeColors[mode],
+  };
+};
+
+// Load theme from localStorage or default to true (dark)
+const savedTheme = localStorage.getItem("darkMode");
+const initialDarkMode = savedTheme !== null ? JSON.parse(savedTheme) : true;
 
 const initialState = {
-  darkMode: true, // Only Dark Mode for V3
+  darkMode: initialDarkMode,
   sidebar: {
     open: true,
     width: 260,
     collapsedWidth: 72,
     variant: "persistent",
   },
-  colors: getThemeColors(),
+  colors: getThemeColors(initialDarkMode),
 };
 
 export const themeSlice = createSlice({
@@ -47,8 +72,10 @@ export const themeSlice = createSlice({
   initialState,
   reducers: {
     toggleTheme: (state) => {
-      // Disabled for V3 - always dark
-      state.darkMode = true;
+      state.darkMode = !state.darkMode;
+      state.colors = getThemeColors(state.darkMode);
+      // Save to localStorage
+      localStorage.setItem("darkMode", JSON.stringify(state.darkMode));
     },
     toggleSidebar: (state) => {
       state.sidebar.open = !state.sidebar.open;

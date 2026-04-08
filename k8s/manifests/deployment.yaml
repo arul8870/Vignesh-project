@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: truck-logistics-frontend
-          image: nexus.arffy.com/projects/report_frontend:92c8fac6
+          image: nexus.Hicas.com/projects/report_frontend:92c8fac6
           ports:
             - containerPort: 80
           env:

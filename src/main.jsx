@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 
 // 2. Create Apollo Client instance
 const apolloClient = new ApolloClient({
-  uri: "https://report-backend.arffy.com/graphql",
+  uri: "https://report-backend.Hicas.com/graphql",
   cache: new InMemoryCache(),
 });
 
