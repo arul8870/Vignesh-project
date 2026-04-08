@@ -1,12 +1,12 @@
 // mockStorage.js
 const STORAGE_KEYS = {
-  USERS: "hicet_users",
-  UPDATES: "hicet_updates",
-  JOBS: "hicet_local_jobs",
-  STUDENTS: "hicet_hall_of_fame",
-  ANNOUNCEMENTS: "hicet_announcements",
-  APPLICATIONS: "hicet_applications",
-  SESSION: "hicet_session",
+  USERS: "HICAS_users",
+  UPDATES: "HICAS_updates",
+  JOBS: "HICAS_local_jobs",
+  STUDENTS: "HICAS_hall_of_fame",
+  ANNOUNCEMENTS: "HICAS_announcements",
+  APPLICATIONS: "HICAS_applications",
+  SESSION: "HICAS_session",
 };
 
 const INITIAL_DATA = {

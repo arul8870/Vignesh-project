@@ -27,7 +27,7 @@ const AdminSettings = () => {
                   <TextField fullWidth label="Designation" defaultValue="Placement Director" />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField fullWidth label="Email Address" defaultValue="admin@hicet.edu" />
+                  <TextField fullWidth label="Email Address" defaultValue="admin@HICAS.edu" />
                 </Grid>
               </Grid>
               

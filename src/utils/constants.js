@@ -114,7 +114,7 @@ export const SESSION_KEYS = {
   RT: () => "rtky_",
 };
 
-export const COMPANY_NAME = "HICET Placement";
+export const COMPANY_NAME = "HICAS Placement";
 // Error messages
 export const LOGIN_FAILED_MSG = "Login failed";
 export const INVALID_LOGIN_MSG = "Login failed: missing user/token";
