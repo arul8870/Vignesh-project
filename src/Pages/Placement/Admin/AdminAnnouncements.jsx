@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Paper, Typography, TextField, Button, Avatar, Stack, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar } from "@mui/material";
+import { Box, Grid, Paper, Typography, TextField, Button, Avatar, Stack, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, useMediaQuery, Card, CardContent } from "@mui/material";
 import { Campaign, Send, Person, AccessTime, Edit, Delete } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import AdminPageHeader from "../../../components/Placement/AdminPageHeader";
 import { placementRepository } from "../../../repositories/placementRepository";
 
 const AdminAnnouncements = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const [announcements, setAnnouncements] = useState([]);
   const [formData, setFormData] = useState({ title: "", content: "" });
   const [open, setOpen] = useState(false);
@@ -75,74 +80,214 @@ const AdminAnnouncements = () => {
   };
 
   return (
-    <Box sx={{ p: 4 }}>
-      <AdminPageHeader 
-        title="Broadcast Center 📣" 
-        description="Communicate campus-wide updates, drive reminders, and institutional news directly to student dashboards."
-      />
+    <Box sx={{ p: isMobile ? 1.5 : isTablet ? 2 : 4 }}>
+      {/* Header */}
+      <Paper
+        sx={{
+          p: isMobile ? 2.5 : 4,
+          mb: isMobile ? 2.5 : 4,
+          background: "linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%)",
+          border: `1px solid ${alpha("#ef4444", 0.2)}`,
+          borderRadius: isMobile ? 3 : 4,
+        }}
+      >
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          sx={{
+            fontWeight: 800,
+            mb: 1,
+            background: "linear-gradient(135deg, #ef4444 0%, #f59e0b 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Broadcast Center 📣
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            fontSize: isMobile ? "0.875rem" : "1rem",
+          }}
+        >
+          Communicate campus-wide updates and institutional news.
+        </Typography>
+      </Paper>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={isMobile ? 2 : 3}>
         {/* Create Announcement Section */}
         <Grid item xs={12} lg={4}>
-          <Paper className="grid-common" sx={{ p: 4 }}>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>Compose Announcement</Typography>
-            <Stack spacing={3}>
+          <Card
+            sx={{
+              borderRadius: 3,
+              bgcolor: alpha(theme.palette.background.paper, 0.6),
+              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            }}
+          >
+            <CardContent sx={{ p: isMobile ? 2.5 : 4 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: isMobile ? 2 : 3,
+                  fontWeight: 700,
+                  fontSize: isMobile ? "1rem" : "1.25rem",
+                }}
+              >
+                Compose Announcement
+              </Typography>
               <Button 
                 variant="outlined" 
                 onClick={() => handleOpen()}
-                sx={{ borderColor: "var(--clr-primary)", color: "var(--clr-primary)", fontWeight: 700, py: 1.5 }}
+                fullWidth
+                sx={{
+                  borderColor: "var(--clr-primary)",
+                  color: "var(--clr-primary)",
+                  fontWeight: 700,
+                  py: 1.5,
+                  borderRadius: 2,
+                }}
               >
                 Create New Announcement
               </Button>
-            </Stack>
-          </Paper>
+            </CardContent>
+          </Card>
         </Grid>
 
         {/* Existing Announcements Feed */}
         <Grid item xs={12} lg={8}>
-          <Stack spacing={3}>
+          <Stack spacing={isMobile ? 2 : 3}>
             {announcements.map((item) => (
-              <Paper key={item.id} className="glass-card" sx={{ p: 4 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-                  <Box sx={{ display: "flex", gap: 2, alignItems: "center", flex: 1 }}>
-                    <Avatar sx={{ bgcolor: "rgba(16,185,129,0.1)", color: "var(--clr-primary)" }}><Campaign /></Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 800 }}>{item.title}</Typography>
-                      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                        <Typography variant="caption" sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary" }}>
-                          <Person sx={{ fontSize: "1rem" }} /> {item.author}
+              <Card
+                key={item.id}
+                sx={{
+                  borderRadius: 3,
+                  bgcolor: alpha(theme.palette.background.paper, 0.6),
+                  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: `0 8px 16px ${alpha(theme.palette.primary.main, 0.15)}`,
+                  },
+                }}
+              >
+                <CardContent sx={{ p: isMobile ? 2.5 : 4 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+                    <Box sx={{ display: "flex", gap: 2, alignItems: "center", flex: 1 }}>
+                      <Avatar
+                        sx={{
+                          bgcolor: alpha("#10b981", 0.1),
+                          color: "var(--clr-primary)",
+                          width: isMobile ? 40 : 48,
+                          height: isMobile ? 40 : 48,
+                        }}
+                      >
+                        <Campaign />
+                      </Avatar>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 800,
+                            mb: 0.5,
+                            fontSize: isMobile ? "0.9375rem" : "1.25rem",
+                          }}
+                        >
+                          {item.title}
                         </Typography>
-                        <Typography variant="caption" sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary" }}>
-                          <AccessTime sx={{ fontSize: "1rem" }} /> {new Date(item.date).toLocaleDateString()}
-                        </Typography>
+                        <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap" }}>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              color: "text.secondary",
+                              fontSize: isMobile ? "0.6875rem" : "0.75rem",
+                            }}
+                          >
+                            <Person sx={{ fontSize: "0.875rem" }} /> {item.author}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              color: "text.secondary",
+                              fontSize: isMobile ? "0.6875rem" : "0.75rem",
+                            }}
+                          >
+                            <AccessTime sx={{ fontSize: "0.875rem" }} /> {new Date(item.date).toLocaleDateString()}
+                          </Typography>
+                        </Box>
                       </Box>
                     </Box>
+                    <Box sx={{ display: "flex", gap: 0.5 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleOpen(item)}
+                        sx={{
+                          color: "text.secondary",
+                          "&:hover": { color: "var(--clr-primary)", bgcolor: alpha("#10b981", 0.1) },
+                        }}
+                      >
+                        <Edit fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDelete(item.id)}
+                        sx={{
+                          color: "text.secondary",
+                          "&:hover": { color: "error.main", bgcolor: alpha("#ef4444", 0.1) },
+                        }}
+                      >
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Box>
                   </Box>
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { color: "var(--clr-primary)" } }} onClick={() => handleOpen(item)}>
-                      <Edit fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }} onClick={() => handleDelete(item.id)}>
-                      <Delete fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </Box>
-                <Typography variant="body1" sx={{ color: "text.primary", lineHeight: 1.7 }}>
-                  {item.content}
-                </Typography>
-              </Paper>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.primary",
+                      lineHeight: 1.7,
+                      fontSize: isMobile ? "0.875rem" : "1rem",
+                    }}
+                  >
+                    {item.content}
+                  </Typography>
+                </CardContent>
+              </Card>
             ))}
             {announcements.length === 0 && (
-              <Box sx={{ py: 10, textAlign: "center", border: "2px dashed rgba(255,255,255,0.05)", borderRadius: 4 }}>
-                <Typography color="text.secondary">No announcements broadcasted yet.</Typography>
-              </Box>
+              <Paper
+                sx={{
+                  p: isMobile ? 4 : 6,
+                  textAlign: "center",
+                  borderRadius: 3,
+                  bgcolor: alpha(theme.palette.background.paper, 0.4),
+                  border: `1px dashed ${alpha(theme.palette.divider, 0.2)}`,
+                }}
+              >
+                <Campaign sx={{ fontSize: isMobile ? "2.5rem" : "3rem", color: "text.secondary", opacity: 0.3, mb: 2 }} />
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  color="text.secondary"
+                  sx={{ mb: 1, fontSize: isMobile ? "1rem" : "1.25rem" }}
+                >
+                  No announcements yet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ opacity: 0.7 }}>
+                  Create your first announcement to get started
+                </Typography>
+              </Paper>
             )}
           </Stack>
         </Grid>
       </Grid>
 
       {/* Add/Edit Announcement Dialog */}
-      <Dialog open={open} onClose={handleClose} PaperProps={{ className: "glass-card", sx: { minWidth: 500 } }}>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle sx={{ fontWeight: 800 }}>
           {editingId ? "Edit Announcement" : "Create New Announcement"}
         </DialogTitle>

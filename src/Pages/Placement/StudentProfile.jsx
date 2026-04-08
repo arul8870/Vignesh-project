@@ -14,14 +14,37 @@ import {
   Alert,
   Snackbar,
   CircularProgress,
+  useMediaQuery,
+  Card,
+  CardContent,
 } from "@mui/material";
-import { Edit, School, WorkspacePremium, Article, Save, CameraAlt, CloudUpload, InsertDriveFile, CheckCircle, Add } from "@mui/icons-material";
+import {
+  Edit,
+  School,
+  WorkspacePremium,
+  Article,
+  Save,
+  CameraAlt,
+  CloudUpload,
+  InsertDriveFile,
+  CheckCircle,
+  Add,
+  Email,
+  Phone,
+  LocationOn,
+  Star,
+} from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
 import { selectAuthData, updateUserData } from "../../store/slicers/authSlicer";
 import AdminPageHeader from "../../components/Placement/AdminPageHeader";
 
 const StudentProfile = () => {
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const authData = useSelector(selectAuthData);
   const user = authData?.user || {};
   const studentId = user.username;
@@ -106,19 +129,17 @@ const StudentProfile = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Save to localStorage
       localStorage.setItem(`student_profile_${studentId}`, JSON.stringify(profileData));
       if (resumeName) {
         localStorage.setItem(`student_resume_${studentId}`, resumeName);
       }
       
-      // Update Redux store with new user data (especially name)
       dispatch(updateUserData({
         name: profileData.name,
         email: profileData.email,
         phone: profileData.phone,
         department: profileData.department,
-        dept: profileData.department, // Keep backward compatibility
+        dept: profileData.department,
         cgpa: profileData.cgpa,
         skills: profileData.skills,
       }));
@@ -138,17 +159,59 @@ const StudentProfile = () => {
   };
 
   return (
-    <Box sx={{ p: 4 }}>
-      <AdminPageHeader
-        title="Professional Profile 👤"
-        description="Manage your academic background, technical skills, and placement documents. This profile is visible to coordinators and recruiters."
-        action={
-          <Stack direction="row" spacing={2}>
+    <Box sx={{ p: isMobile ? 1.5 : isTablet ? 2 : 4 }}>
+      {/* Header with Actions */}
+      <Paper
+        sx={{
+          p: isMobile ? 2.5 : 4,
+          mb: isMobile ? 2.5 : 4,
+          background: "linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%)",
+          border: `1px solid ${alpha("#a855f7", 0.2)}`,
+          borderRadius: isMobile ? 3 : 4,
+        }}
+      >
+        <Stack
+          direction={isMobile ? "column" : "row"}
+          justifyContent="space-between"
+          alignItems={isMobile ? "flex-start" : "center"}
+          spacing={isMobile ? 2 : 0}
+        >
+          <Box>
+            <Typography
+              variant={isMobile ? "h5" : "h4"}
+              sx={{
+                fontWeight: 800,
+                mb: 1,
+                background: "linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Professional Profile 👤
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                fontSize: isMobile ? "0.875rem" : "1rem",
+              }}
+            >
+              Manage your academic background, skills, and placement documents.
+            </Typography>
+          </Box>
+          
+          <Stack direction="row" spacing={isMobile ? 1 : 2}>
             {isEditing && (
               <Button
                 variant="outlined"
                 onClick={handleCancel}
-                sx={{ borderColor: "rgba(255,255,255,0.2)", color: "text.secondary", fontWeight: 700 }}
+                sx={{
+                  borderColor: alpha(theme.palette.divider, 0.2),
+                  color: "text.secondary",
+                  fontWeight: 700,
+                  borderRadius: 2,
+                  px: 3,
+                }}
                 disabled={isSaving}
               >
                 Cancel
@@ -158,303 +221,534 @@ const StudentProfile = () => {
               variant="contained"
               startIcon={isEditing ? (isSaving ? <CircularProgress size={20} /> : <Save />) : <Edit />}
               onClick={isEditing ? handleSave : () => setIsEditing(true)}
-              sx={{ bgcolor: isEditing ? "var(--clr-primary)" : "rgba(255,255,255,0.05)", fontWeight: 700 }}
+              sx={{
+                bgcolor: isEditing ? "var(--clr-primary)" : alpha(theme.palette.primary.main, 0.1),
+                fontWeight: 700,
+                borderRadius: 2,
+                px: 3,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  bgcolor: isEditing ? "var(--clr-primary-dark)" : alpha(theme.palette.primary.main, 0.2),
+                },
+              }}
               disabled={isSaving}
             >
               {isEditing ? (isSaving ? "Saving..." : "Save Profile") : "Edit Profile"}
             </Button>
           </Stack>
-        }
-      />
+        </Stack>
+      </Paper>
 
-      <Grid container spacing={4}>
-        {/* Left: Identity Card */}
+      <Grid container spacing={isMobile ? 2 : 3}>
+        {/* Left: Profile Card */}
         <Grid item xs={12} lg={4}>
-          <Paper className="glass-card" sx={{ p: 4, textAlign: "center" }}>
-            <Box sx={{ position: "relative", display: "inline-block", mb: 3 }}>
-              <Avatar
-                sx={{ width: 140, height: 140, bgcolor: "var(--clr-primary)", fontSize: "3.5rem", boxShadow: "0 0 40px rgba(16,185,129,0.2)" }}
-              >
-                {profileData.name.charAt(0).toUpperCase()}
-              </Avatar>
-              {isEditing && (
-                <IconButton sx={{ position: "absolute", bottom: 0, right: 0, bgcolor: "var(--clr-primary)", "&:hover": { bgcolor: "var(--clr-primary)" } }} size="small">
-                  <CameraAlt fontSize="small" />
-                </IconButton>
-              )}
-            </Box>
-            
-            {isEditing ? (
-              <Stack spacing={2} sx={{ mb: 3 }}>
-                <TextField
-                  name="name"
-                  label="Full Name"
-                  value={profileData.name}
-                  onChange={handleChange}
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                  name="email"
-                  label="Email Address"
-                  type="email"
-                  value={profileData.email}
-                  onChange={handleChange}
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
-                <TextField
-                  name="phone"
-                  label="Phone Number"
-                  value={profileData.phone}
-                  onChange={handleChange}
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Stack>
-            ) : (
-              <>
-                <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>{profileData.name || "Student Name"}</Typography>
-                {profileData.email && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{profileData.email}</Typography>
-                )}
-                {profileData.phone && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>{profileData.phone}</Typography>
-                )}
-              </>
-            )}
-
-            <Divider sx={{ mb: 4, opacity: 0.1 }} />
-
-            <Stack spacing={3} sx={{ textAlign: "left" }}>
-              {isEditing ? (
-                <>
-                  <TextField
-                    name="department"
-                    label="Department"
-                    value={profileData.department}
-                    onChange={handleChange}
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <TextField
-                    name="rollNumber"
-                    label="Roll Number"
-                    value={profileData.rollNumber}
-                    onChange={handleChange}
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <TextField
-                    name="cgpa"
-                    label="CGPA (out of 10)"
-                    type="number"
-                    inputProps={{ step: "0.01", min: "0", max: "10" }}
-                    value={profileData.cgpa}
-                    onChange={handleChange}
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </>
-              ) : (
-                <>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <School color="primary" />
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Department</Typography>
-                      <Typography variant="body2" fontWeight={700}>{profileData.department || "Not specified"}</Typography>
-                    </Box>
-                  </Box>
-                  {profileData.rollNumber && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <WorkspacePremium color="primary" />
-                      <Box>
-                        <Typography variant="caption" color="text.secondary">Roll Number</Typography>
-                        <Typography variant="body2" fontWeight={700}>{profileData.rollNumber}</Typography>
-                      </Box>
-                    </Box>
-                  )}
-                  {profileData.cgpa && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <WorkspacePremium color="primary" />
-                      <Box>
-                        <Typography variant="caption" color="text.secondary">CGPA</Typography>
-                        <Typography variant="body2" fontWeight={700} sx={{ color: "var(--clr-primary)" }}>{profileData.cgpa}/10</Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </>
-              )}
-            </Stack>
-          </Paper>
-        </Grid>
-
-        {/* Right: Technical Details */}
-        <Grid item xs={12} lg={8}>
-          <Stack spacing={4}>
-            {/* Academic Details */}
-            {isEditing && (
-              <Paper className="grid-common" sx={{ p: 4 }}>
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <School color="primary" /> Academic Details
-                </Typography>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      name="tenthMark"
-                      label="10th Mark (%)"
-                      type="number"
-                      inputProps={{ step: "0.01", min: "0", max: "100" }}
-                      value={profileData.tenthMark}
-                      onChange={handleChange}
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      name="twelfthMark"
-                      label="12th Mark (%)"
-                      type="number"
-                      inputProps={{ step: "0.01", min: "0", max: "100" }}
-                      value={profileData.twelfthMark}
-                      onChange={handleChange}
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      name="degreeMark"
-                      label="Degree Mark / CGPA"
-                      value={profileData.degreeMark}
-                      onChange={handleChange}
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                </Grid>
-              </Paper>
-            )}
-
-            {/* Technical Skills */}
-            <Paper className="grid-common" sx={{ p: 4 }}>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 3 }}>Technical Skill Stack</Typography>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 2 }}>
-                {profileData.skills.map((skill) => (
-                  <Chip
-                    key={skill}
-                    label={skill}
-                    onDelete={isEditing ? () => handleRemoveSkill(skill) : undefined}
+          <Card
+            sx={{
+              borderRadius: 3,
+              bgcolor: alpha(theme.palette.background.paper, 0.6),
+              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              overflow: "visible",
+            }}
+          >
+            {/* Avatar Section */}
+            <Box
+              sx={{
+                p: isMobile ? 3 : 4,
+                pb: isMobile ? 2.5 : 3,
+                textAlign: "center",
+                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.08) 100%)",
+                position: "relative",
+              }}
+            >
+              <Box sx={{ position: "relative", display: "inline-block", mb: 2 }}>
+                <Avatar
+                  sx={{
+                    width: isMobile ? 100 : 120,
+                    height: isMobile ? 100 : 120,
+                    bgcolor: "transparent",
+                    background: "linear-gradient(135deg, #10b981 0%, #3b82f6 100%)",
+                    fontSize: isMobile ? "2.5rem" : "3rem",
+                    boxShadow: `0 8px 24px ${alpha("#10b981", 0.3)}`,
+                    border: `4px solid ${alpha("#ffffff", 0.2)}`,
+                  }}
+                >
+                  {profileData.name.charAt(0).toUpperCase()}
+                </Avatar>
+                {isEditing && (
+                  <IconButton
                     sx={{
-                      bgcolor: "rgba(16, 185, 129, 0.08)",
-                      color: "var(--clr-primary)",
-                      fontWeight: 700,
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
-                      "& .MuiChip-deleteIcon": { color: "var(--clr-primary)" }
+                      position: "absolute",
+                      bottom: 0,
+                      right: 0,
+                      bgcolor: "var(--clr-primary)",
+                      border: `3px solid ${theme.palette.background.paper}`,
+                      "&:hover": { bgcolor: "var(--clr-primary-dark)" },
+                      width: 36,
+                      height: 36,
                     }}
-                  />
-                ))}
-                {profileData.skills.length === 0 && !isEditing && (
-                  <Typography variant="body2" color="text.secondary">No skills added yet.</Typography>
+                    size="small"
+                  >
+                    <CameraAlt fontSize="small" />
+                  </IconButton>
                 )}
               </Box>
-              {isEditing && (
-                <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-                  <TextField
-                    size="small"
-                    placeholder="Add a skill..."
-                    value={newSkill}
-                    onChange={(e) => setNewSkill(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
-                    sx={{ flex: 1 }}
-                  />
-                  <Button
-                    variant="outlined"
-                    startIcon={<Add />}
-                    onClick={handleAddSkill}
-                    sx={{ borderColor: "var(--clr-primary)", color: "var(--clr-primary)", fontWeight: 700 }}
-                  >
-                    Add
-                  </Button>
-                </Box>
-              )}
-            </Paper>
-
-            {/* Resume Upload */}
-            <Paper className="grid-common" sx={{ p: 4 }}>
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 3, display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Article color="primary" /> Career Credentials
-              </Typography>
               
-              {resumeName ? (
-                <Box sx={{ p: 4, borderRadius: 2, border: "2px solid rgba(16,185,129,0.2)", bgcolor: "rgba(16,185,129,0.03)", textAlign: "center" }}>
-                  <InsertDriveFile sx={{ fontSize: "3rem", color: "var(--clr-primary)", mb: 2 }} />
-                  <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>{resumeName}</Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 3 }}>
-                    <CheckCircle sx={{ fontSize: "0.9rem", verticalAlign: "middle", mr: 0.5 }} />
-                    Resume uploaded successfully
+              {isEditing ? (
+                <Stack spacing={1.5} sx={{ mt: 2 }}>
+                  <TextField
+                    name="name"
+                    label="Full Name"
+                    value={profileData.name}
+                    onChange={handleChange}
+                    fullWidth
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                        bgcolor: alpha(theme.palette.background.default, 0.5),
+                      },
+                    }}
+                  />
+                  <TextField
+                    name="email"
+                    label="Email Address"
+                    type="email"
+                    value={profileData.email}
+                    onChange={handleChange}
+                    fullWidth
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                        bgcolor: alpha(theme.palette.background.default, 0.5),
+                      },
+                    }}
+                  />
+                  <TextField
+                    name="phone"
+                    label="Phone Number"
+                    value={profileData.phone}
+                    onChange={handleChange}
+                    fullWidth
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                        bgcolor: alpha(theme.palette.background.default, 0.5),
+                      },
+                    }}
+                  />
+                </Stack>
+              ) : (
+                <>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 800,
+                      mb: 0.5,
+                      fontSize: isMobile ? "1.25rem" : "1.5rem",
+                    }}
+                  >
+                    {profileData.name || "Student Name"}
                   </Typography>
-                  {isEditing && (
-                    <Stack direction="row" spacing={2} justifyContent="center">
-                      <input
-                        accept=".pdf,.doc,.docx"
-                        style={{ display: "none" }}
-                        id="resume-upload-edit"
-                        type="file"
-                        onChange={handleResumeUpload}
-                      />
-                      <label htmlFor="resume-upload-edit">
-                        <Button
-                          variant="outlined"
-                          component="span"
-                          startIcon={<CloudUpload />}
-                          size="small"
-                          sx={{ borderColor: "var(--clr-primary)", color: "var(--clr-primary)", fontWeight: 700 }}
-                        >
-                          Update Resume
-                        </Button>
-                      </label>
+                  {profileData.email && (
+                    <Stack direction="row" alignItems="center" justifyContent="center" spacing={0.5} sx={{ mb: 0.5 }}>
+                      <Email sx={{ fontSize: "0.875rem", color: "text.secondary" }} />
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}>
+                        {profileData.email}
+                      </Typography>
                     </Stack>
                   )}
-                </Box>
-              ) : (
-                <Box sx={{ p: 4, borderRadius: 2, border: "2px dashed rgba(255,255,255,0.1)", bgcolor: "rgba(255,255,255,0.01)", textAlign: "center" }}>
-                  {isEditing ? (
-                    <>
-                      <CloudUpload sx={{ fontSize: "3rem", color: "text.secondary", mb: 2 }} />
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>No resume uploaded yet</Typography>
-                      <input
-                        accept=".pdf,.doc,.docx"
-                        style={{ display: "none" }}
-                        id="resume-upload-new"
-                        type="file"
-                        onChange={handleResumeUpload}
-                      />
-                      <label htmlFor="resume-upload-new">
-                        <Button
-                          variant="contained"
-                          component="span"
-                          startIcon={<CloudUpload />}
-                          sx={{ bgcolor: "var(--clr-primary)", fontWeight: 700 }}
-                        >
-                          Upload Resume
-                        </Button>
-                      </label>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
-                        PDF, DOC, DOCX (Max 5MB)
+                  {profileData.phone && (
+                    <Stack direction="row" alignItems="center" justifyContent="center" spacing={0.5}>
+                      <Phone sx={{ fontSize: "0.875rem", color: "text.secondary" }} />
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}>
+                        {profileData.phone}
                       </Typography>
-                    </>
-                  ) : (
-                    <>
-                      <Article sx={{ fontSize: "3rem", color: "text.secondary", mb: 2 }} />
-                      <Typography variant="body2" color="text.secondary">No resume uploaded</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>Click "Edit Profile" to upload</Typography>
-                    </>
+                    </Stack>
+                  )}
+                </>
+              )}
+            </Box>
+
+            <Divider sx={{ opacity: 0.1 }} />
+
+            {/* Details Section */}
+            <CardContent sx={{ p: isMobile ? 2.5 : 4, pt: isMobile ? 2 : 3 }}>
+              <Stack spacing={isMobile ? 2 : 2.5}>
+                {isEditing ? (
+                  <>
+                    <TextField
+                      name="department"
+                      label="Department"
+                      value={profileData.department}
+                      onChange={handleChange}
+                      fullWidth
+                      size="small"
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                        },
+                      }}
+                    />
+                    <TextField
+                      name="rollNumber"
+                      label="Roll Number"
+                      value={profileData.rollNumber}
+                      onChange={handleChange}
+                      fullWidth
+                      size="small"
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                        },
+                      }}
+                    />
+                    <TextField
+                      name="cgpa"
+                      label="CGPA (out of 10)"
+                      type="number"
+                      inputProps={{ step: "0.01", min: "0", max: "10" }}
+                      value={profileData.cgpa}
+                      onChange={handleChange}
+                      fullWidth
+                      size="small"
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                        },
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <Avatar sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1), width: 40, height: 40 }}>
+                        <School sx={{ color: theme.palette.primary.main, fontSize: "1.25rem" }} />
+                      </Avatar>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Department</Typography>
+                        <Typography variant="body2" fontWeight={700} sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                          {profileData.department || "Not specified"}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    {profileData.rollNumber && (
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Avatar sx={{ bgcolor: alpha("#f59e0b", 0.1), width: 40, height: 40 }}>
+                          <WorkspacePremium sx={{ color: "#f59e0b", fontSize: "1.25rem" }} />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Roll Number</Typography>
+                          <Typography variant="body2" fontWeight={700} sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                            {profileData.rollNumber}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
+                    {profileData.cgpa && (
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Avatar sx={{ bgcolor: alpha("#10b981", 0.1), width: 40, height: 40 }}>
+                          <Star sx={{ color: "#10b981", fontSize: "1.25rem" }} />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>CGPA</Typography>
+                          <Typography variant="body2" fontWeight={800} sx={{ color: "var(--clr-primary)", fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                            {profileData.cgpa}/10
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
+                  </>
+                )}
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Right: Skills & Resume */}
+        <Grid item xs={12} lg={8}>
+          <Stack spacing={isMobile ? 2 : 3}>
+            {/* Skills Card */}
+            <Card
+              sx={{
+                borderRadius: 3,
+                bgcolor: alpha(theme.palette.background.paper, 0.6),
+                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              }}
+            >
+              <CardContent sx={{ p: isMobile ? 2.5 : 4 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 800,
+                    mb: isMobile ? 2 : 3,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    fontSize: isMobile ? "1rem" : "1.25rem",
+                  }}
+                >
+                  <Star sx={{ color: "#fbbf24" }} /> Technical Skill Stack
+                </Typography>
+                
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 1 : 1.5, mb: 2 }}>
+                  {profileData.skills.map((skill) => (
+                    <Chip
+                      key={skill}
+                      label={skill}
+                      onDelete={isEditing ? () => handleRemoveSkill(skill) : undefined}
+                      sx={{
+                        bgcolor: alpha("#10b981", 0.1),
+                        color: "var(--clr-primary)",
+                        fontWeight: 700,
+                        border: `1px solid ${alpha("#10b981", 0.2)}`,
+                        "& .MuiChip-deleteIcon": { color: "var(--clr-primary)" },
+                        fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                      }}
+                    />
+                  ))}
+                  {profileData.skills.length === 0 && !isEditing && (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
+                    >
+                      No skills added yet.
+                    </Typography>
                   )}
                 </Box>
-              )}
-            </Paper>
+                
+                {isEditing && (
+                  <Stack direction={isMobile ? "column" : "row"} spacing={isMobile ? 1 : 1.5}>
+                    <TextField
+                      size="small"
+                      placeholder="Add a skill..."
+                      value={newSkill}
+                      onChange={(e) => setNewSkill(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
+                      sx={{
+                        flex: 1,
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                        },
+                      }}
+                    />
+                    <Button
+                      variant="outlined"
+                      startIcon={<Add />}
+                      onClick={handleAddSkill}
+                      sx={{
+                        borderColor: "var(--clr-primary)",
+                        color: "var(--clr-primary)",
+                        fontWeight: 700,
+                        borderRadius: 2,
+                        px: 3,
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </Stack>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Resume Upload Card */}
+            <Card
+              sx={{
+                borderRadius: 3,
+                bgcolor: alpha(theme.palette.background.paper, 0.6),
+                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              }}
+            >
+              <CardContent sx={{ p: isMobile ? 2.5 : 4 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 800,
+                    mb: isMobile ? 2 : 3,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    fontSize: isMobile ? "1rem" : "1.25rem",
+                  }}
+                >
+                  <Article color="primary" /> Career Credentials
+                </Typography>
+                
+                {resumeName ? (
+                  <Paper
+                    sx={{
+                      p: isMobile ? 3 : 4,
+                      borderRadius: 3,
+                      border: `2px solid ${alpha("#10b981", 0.2)}`,
+                      bgcolor: alpha("#10b981", 0.03),
+                      textAlign: "center",
+                    }}
+                  >
+                    <InsertDriveFile
+                      sx={{
+                        fontSize: isMobile ? "3rem" : "4rem",
+                        color: "var(--clr-primary)",
+                        mb: 1.5,
+                      }}
+                    />
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight={700}
+                      sx={{ mb: 1, fontSize: isMobile ? "0.875rem" : "1rem" }}
+                    >
+                      {resumeName}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 0.5,
+                        mb: 2.5,
+                        fontSize: isMobile ? "0.75rem" : "0.875rem",
+                      }}
+                    >
+                      <CheckCircle sx={{ fontSize: "0.875rem" }} />
+                      Resume uploaded successfully
+                    </Typography>
+                    {isEditing && (
+                      <Stack direction={isMobile ? "column" : "row"} spacing={1.5} justifyContent="center">
+                        <input
+                          accept=".pdf,.doc,.docx"
+                          style={{ display: "none" }}
+                          id="resume-upload-edit"
+                          type="file"
+                          onChange={handleResumeUpload}
+                        />
+                        <label htmlFor="resume-upload-edit">
+                          <Button
+                            variant="outlined"
+                            component="span"
+                            startIcon={<CloudUpload />}
+                            size="small"
+                            sx={{
+                              borderColor: "var(--clr-primary)",
+                              color: "var(--clr-primary)",
+                              fontWeight: 700,
+                              borderRadius: 2,
+                            }}
+                          >
+                            Update Resume
+                          </Button>
+                        </label>
+                      </Stack>
+                    )}
+                  </Paper>
+                ) : (
+                  <Paper
+                    sx={{
+                      p: isMobile ? 3 : 4,
+                      borderRadius: 3,
+                      border: `2px dashed ${alpha(theme.palette.divider, 0.2)}`,
+                      bgcolor: alpha(theme.palette.divider, 0.02),
+                      textAlign: "center",
+                    }}
+                  >
+                    {isEditing ? (
+                      <>
+                        <CloudUpload
+                          sx={{
+                            fontSize: isMobile ? "3rem" : "4rem",
+                            color: "text.secondary",
+                            opacity: 0.5,
+                            mb: 1.5,
+                          }}
+                        />
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 2, fontSize: isMobile ? "0.875rem" : "1rem" }}
+                        >
+                          No resume uploaded yet
+                        </Typography>
+                        <input
+                          accept=".pdf,.doc,.docx"
+                          style={{ display: "none" }}
+                          id="resume-upload-new"
+                          type="file"
+                          onChange={handleResumeUpload}
+                        />
+                        <label htmlFor="resume-upload-new">
+                          <Button
+                            variant="contained"
+                            component="span"
+                            startIcon={<CloudUpload />}
+                            sx={{
+                              bgcolor: "var(--clr-primary)",
+                              fontWeight: 700,
+                              borderRadius: 2,
+                              px: 3,
+                            }}
+                          >
+                            Upload Resume
+                          </Button>
+                        </label>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            display: "block",
+                            mt: 1.5,
+                            opacity: 0.7,
+                            fontSize: isMobile ? "0.75rem" : "0.875rem",
+                          }}
+                        >
+                          PDF, DOC, DOCX (Max 5MB)
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Article
+                          sx={{
+                            fontSize: isMobile ? "3rem" : "4rem",
+                            color: "text.secondary",
+                            opacity: 0.3,
+                            mb: 1.5,
+                          }}
+                        />
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
+                        >
+                          No resume uploaded
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            display: "block",
+                            opacity: 0.7,
+                            fontSize: isMobile ? "0.75rem" : "0.875rem",
+                          }}
+                        >
+                          Click "Edit Profile" to upload
+                        </Typography>
+                      </>
+                    )}
+                  </Paper>
+                )}
+              </CardContent>
+            </Card>
           </Stack>
         </Grid>
       </Grid>
@@ -464,7 +758,7 @@ const StudentProfile = () => {
         autoHideDuration={3000} 
         onClose={() => setToast({ ...toast, open: false })}
       >
-        <Alert severity={toast.severity} sx={{ width: '100%', fontWeight: 700 }}>
+        <Alert severity={toast.severity} sx={{ width: '100%', fontWeight: 700, borderRadius: 2 }}>
           {toast.message}
         </Alert>
       </Snackbar>
