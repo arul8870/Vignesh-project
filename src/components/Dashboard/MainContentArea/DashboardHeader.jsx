@@ -22,8 +22,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../../store/slicers/themeSlice";
 import { useSidebar } from "../../../CustomHooks/useSidebar";
-import { formatDate, getNowStr } from "../../../utils/time_utils";
-import { date_formats } from "../../../utils/constants";
+import { getNowStr } from "../../../utils/time_utils";
 
 const IconWrapper = styled(IconButton)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.common.white, 0.08),
@@ -227,7 +226,11 @@ const ContentTop = () => {
                   fontSize: "0.8125rem",
                 }}
               >
-                {formatDate(new Date(), date_formats.DD_MMM_YYYY)}
+                {new Date().toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
               </Typography>
             </DateBox>
           )}
